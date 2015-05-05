@@ -25,7 +25,7 @@ mm.add({
 			}
 			if( fromName == null)
 				fromName = msg.from;
-			if(!fromName || !message)
+			if(!fromName || !msg.message)
 				return;
 			me.irc.say('#daladevelop', fromName + ' says: '+ msg.message);
 		});

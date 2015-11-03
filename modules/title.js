@@ -7,7 +7,7 @@ if (typeof String.prototype.startsWith != 'function') {
 		return this.slice(0, str.length) == str;
 	};
 }
-var ignoreUrls = ['paste.debian.net', 'pastie.org', 'jsfiddle.net', 'pastebin.com'];
+var ignoreUrls = ['paste.debian.net', 'pastie.org', 'jsfiddle.net', 'pastebin.com', 'imgur.com'];
 mm.add({
 	name: 'title',
 	init: function(){

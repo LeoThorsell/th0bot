@@ -87,8 +87,12 @@ mm.add({
 		});
 	},
 	loadCredentials: function(){
+		console.log('loading credentials');
 		var me = this;
 		fs.readFile('./data/smscredentials.json', 'utf8', function(err, data){
+			if (err) {
+				return console.log('error ' + err);
+			}
 			me.credentials = JSON.parse(data);
 			if(!me.sms.started)
 				me.sms.init(me.credentials.port);

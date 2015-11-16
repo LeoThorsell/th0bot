@@ -18,7 +18,6 @@ mm.add({
 			if(match == null)
 				return;
 			var reply = match[1][0].toUpperCase() + match[1].slice(1).toLowerCase();
-			console.log(reply);
 			me.irc.say(to, reply + ' ' + moment().format('w'));
 		});
 	}

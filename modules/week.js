@@ -3,7 +3,7 @@ var mm =  require('../moduleManager.js');
 var moment = require('moment');
 
 var triggers = ['week','vecka','uke','semaine','woche','viikko',',uge','toddobaadka'];
-var weekExpr = new RegExp('!(' + triggers.join('|') + ')\s*$', 'i');
+var weekExpr = new RegExp('^!(' + triggers.join('|') + ')\s*$', 'i');
 
 mm.add({
 	name: 'week',

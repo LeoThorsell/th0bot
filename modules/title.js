@@ -36,14 +36,14 @@ mm.add({
 			var text = '';
 			var found = false;
 			curl.on( 'data', function( chunk ) {
-				if(chunkCount++>10){
+				if(chunkCount++>30){
 					return 0;
 				}
 				if(found)
 					return 0;
 				text += chunk.toString();
 				//var titleMatch = /(<\s*title[^>]*>(.+?)<\s*\/\s*title)>/gi.exec(text);
-				var titleMatch = /<title>([\s\S]+?)<\/title>/gi.exec(text);
+				var titleMatch = /<title.+?>([\s\S]+?)<\/title>/gi.exec(text);
 				if(titleMatch == null){
 					return chunk.length;
 				}

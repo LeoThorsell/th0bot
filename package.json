@@ -1,0 +1,12 @@
+{
+	"name":"th0bot",
+	"version":"0.0.1",
+  "dependencies": {
+    "elasticsearch": "^9.0.0",
+    "html-entities": "^1.2.0",
+    "irc": "^0.4.0",
+    "moment": "^2.10.6",
+    "node-libcurl": "^0.7.0",
+    "request": "^2.65.0"
+  }
+}

@@ -9,9 +9,10 @@ mm.add({
             if(from == me.irc.opt.nick)
                 return;
             message = message.trim();
-            if(message.startsWith('!pull pork'))
+            if(message.startsWith('!pull pork')){
                 me.irc.say(to, "I pulled that pork and served it to a dork!");
-            return;
+		return;
+	    }
             if(message.startsWith('!pull finger')){
                 me.irc.say(to, "You sure you want to do that?");
                 me.irc.say(to, "                 prrrpt.");

@@ -3,11 +3,6 @@ var mm =  require('../moduleManager.js');
 var Curl = require('node-libcurl').Curl
 var HtmlEntities = require('html-entities').AllHtmlEntities;
 
-//if (typeof String.prototype.startsWith != 'function') {
-//	String.prototype.startsWith = function (str){
-//		return this.slice(0, str.length) == str;
-//	};
-//}
 mm.add({
 	name: 'mac',
 	init: function(){

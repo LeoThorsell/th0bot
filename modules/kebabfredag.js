@@ -1,7 +1,8 @@
 require('../leoLibrary.js');
 var mm =  require('../moduleManager.js');
 var Curl = require('node-libcurl').Curl;
-var triggerExpr = /^!kebab(fredag)?/;
+var commandTriggerExpr = /^!kebab(fredag)?/;
+var questionTriggerExpr = /[äe]re?\s(det?\s)?kebabfredag/i;
 var kebabApiUrl = "http://ere.kebabfredag.nu/api/";
 
 mm.add({
@@ -12,7 +13,7 @@ mm.add({
 			if(from == irc.opt.nick)
 				return;
 			message = message.trim();
-			if(!triggerExpr.test(message))
+			if(!commandTriggerExpr.test(message) && !questionTriggerExpr.test(message))
 				return;
 			var curl = new Curl();
 			var url = kebabApiUrl + "ere";

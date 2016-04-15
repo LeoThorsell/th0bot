@@ -2,7 +2,7 @@ require('../leoLibrary.js');
 var mm =  require('../moduleManager.js');
 var Curl = require('node-libcurl').Curl;
 var commandTriggerExpr = /^!kebab(fredag)?/;
-var questionTriggerExpr = /[äe]re?\s(det?\s)?kebabfredag/i;
+var questionTriggerExpr = /^[äe]re?\s+(det?\s+)?kebabfredag\?[?!\s]*$/i;
 var kebabApiUrl = "http://ere.kebabfredag.nu/api/";
 
 mm.add({

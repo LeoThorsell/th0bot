@@ -30,8 +30,9 @@ mm.add({
 					return;
 			var url = urlMatch[0];
 			http
-				.get(url)
+				.get(url, {maxread: 1024*50})
 				.then(res => {
+					console.log('title:', res);
 					var titleMatch = /<title[^>]*>(.*?)<\/title>/gi.exec(res.body);
 					if(titleMatch == null){
 						return;

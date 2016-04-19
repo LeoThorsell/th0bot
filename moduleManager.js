@@ -33,6 +33,8 @@ var moduleManager = {
 			var name = file.substring(3);
 			d.on('error', function(err){
 				console.log(file + ' ' + err);
+				if (err.stack)
+				console.log(err.stack);
 				var module = mm.modules[name];
 				if(module == null)
 					return;

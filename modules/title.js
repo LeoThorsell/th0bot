@@ -31,8 +31,8 @@ mm.add({
 			var url = urlMatch[0];
 			http
 				.get(url)
-				.then((statusCode, body, headers) => {
-					var titleMatch = /<title[^>]*>(.*?)<\/title>/gi.exec(body);
+				.then(res => {
+					var titleMatch = /<title[^>]*>(.*?)<\/title>/gi.exec(res.body);
 					if(titleMatch == null){
 						return;
 					}

@@ -1,6 +1,9 @@
 {
 	"name":"th0bot",
 	"version":"0.0.1",
+	"engines": {
+    "node": "^5.0.0"
+  }, 
   "dependencies": {
     "elasticsearch": "^9.0.0",
     "html-entities": "^1.2.0",

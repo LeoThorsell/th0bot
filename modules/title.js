@@ -1,6 +1,6 @@
 require('../leoLibrary.js');
+var http = require('../http.js');
 var mm =  require('../moduleManager.js');
-var Curl = require('node-libcurl').Curl
 var HtmlEntities = require('html-entities').AllHtmlEntities;
 if (typeof String.prototype.startsWith != 'function') {
 	String.prototype.startsWith = function (str){
@@ -29,40 +29,21 @@ mm.add({
 				if(new RegExp(ignoreUrls[i], 'i').exec(message))
 					return;
 			var url = urlMatch[0];
-			var curl = new Curl();
-			curl.setOpt('FOLLOWLOCATION', true );
-			curl.setOpt('URL', url);
-			var chunkCount = 0;
-			var text = '';
-			var found = false;
-			curl.on( 'data', function( chunk ) {
-				if(chunkCount++>30){
-					return 0;
-				}
-				if(found)
-					return 0;
-				text += chunk.toString();
-				//var titleMatch = /(<\s*title[^>]*>(.+?)<\s*\/\s*title)>/gi.exec(text);
-				var titleMatch = /<title.+?>([\s\S]+?)<\/title>/gi.exec(text);
-				if(titleMatch == null){
-					return chunk.length;
-				}
-				found = true;
-				text = null;
-
-				var title = titleMatch[1].replace(/(\r\n|\n|\r)/gm,'').trim();
-
-				title = htmlDecoder.decode(title);
-				title = title.replace(/(?:\r\n|\r|\n)/g, ' ');
-				title = title.replace(/\s{2,}/g, ' ');
-				if( title.length > 230 )
-					title = title.substring(0,229) + "…";
-				me.irc.say(to, 'title: ' + title);
-				return chunk.length;
-			});
-			curl.on('end', function(){curl.close();});
-			curl.on('error', function(){curl.close();});
-			curl.perform();
+			http
+				.get(url, {maxread: 1024*50})
+				.then(res => {
+					console.log('title:', res);
+					var titleMatch = /<title[^>]*>(.*?)<\/title>/gi.exec(res.body);
+					if(titleMatch == null){
+						return;
+					}
+					var title = titleMatch[1].trim();	
+					title = htmlDecoder.decode(title);
+					title = title.replace(/(\r\n|\r|\n)+/g, ' ');
+					if( title.length > 230 )
+						title = title.substring(0,229) + "…";
+					me.irc.say(to, 'title: ' + title);
+				});
 		});
 	}
 });

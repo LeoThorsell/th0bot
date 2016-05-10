@@ -1,40 +1,36 @@
 require('../leoLibrary.js');
+var http = require('../http.js');
 var mm =  require('../moduleManager.js');
-var Curl = require('node-libcurl').Curl;
 var commandTriggerExpr = /^!kebab(fredag)?/;
-var questionTriggerExpr = /[äe]re?\s(det?\s)?kebabfredag/i;
+var questionTriggerExpr = /^[äe]re?\s+(det?\s+)?kebabfredag\?[?!\s]*$/i;
 var kebabApiUrl = "http://ere.kebabfredag.nu/api/";
 
-mm.add({
+ mm.add({
 	name: 'kebabfredag',
 	init: function() {
-		var irc = this.irc;;
-		this.on('message', function (from, to, message) {
+		var irc = this.irc;
+		irc.on('message', (from, to, message) => {
 			if(from == irc.opt.nick)
 				return;
 			message = message.trim();
 			if(!commandTriggerExpr.test(message) && !questionTriggerExpr.test(message))
 				return;
-			var curl = new Curl();
 			var url = kebabApiUrl + "ere";
-			curl.setOpt(Curl.option.FOLLOWLOCATION, true);
-			curl.setOpt(Curl.option.HTTPHEADER, ['Accept: application/json']);
-			curl.setOpt(Curl.option.URL, url);
-			curl.on( 'end', function(statusCode, body, headers) {
-				var data;
-				try {
-					data = JSON.parse(body);
-				} catch (e) {
-					console.log('Lol ere.kebabfredag.nu\'s api är trasigt!', e);
-					return;
-				}
-				if (data && data.hasOwnProperty('answer')) {
-					var response = data.answer ? 'Jepp, det är kebabfredag.' : 'Nepp, inte kebabfredag idag :(';
-					irc.say(to, from + ': ' + response);
-				}
-			});
-			curl.on('error', function(){curl.close();});
-			curl.perform();
+			http
+				.get(url, {headers:{'Accept':'application/json'}})
+				.then((res) => {
+					var data;
+					try {
+						data = JSON.parse(res.body);
+					} catch (e) {
+						console.log('Lol ere.kebabfredag.nu\'s api är trasigt!', e);
+						return;
+					}
+					if (data && data.hasOwnProperty('answer')) {
+						var response = data.answer ? 'Jepp, det är kebabfredag.' : 'Nepp, inte kebabfredag idag :(';
+						irc.say(to, from + ': ' + response);
+					}
+				});
 		});
 	}
 });

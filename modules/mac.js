@@ -5,32 +5,32 @@ var HtmlEntities = require('html-entities').AllHtmlEntities;
 
 mm.add({
 	name: 'mac',
-	init: function(){
+	init: function(irc){
 		var htmlDecoder = new HtmlEntities();
-		var me = this;
-		this.on('message', function (from, to, message) {
-                    if(me.irc == null )
-                        return;
-                    if(from == me.irc.opt.nick)
-                        return;
-                    message = message.trim();
-                    if(message.startsWith('!mac ')){
-
-                        var vendor = '';
-                        var curl = new Curl();
-                        url = "http://api.macvendors.com/" + htmlDecoder.encode(message.substring(5).trim());
-                        curl.setOpt('FOLLOWLOCATION', true );
-                        curl.setOpt('URL', url);
-                        curl.on( 'end', function( statusCode, body, headers ) {
-                            vendor = htmlDecoder.decode(body);
-                            if ( vendor == "")
-                                return;
-                            me.irc.say(to, from + ': ' + vendor);
-
-                        });
-                        curl.on('error', function(){curl.close();});
-                        curl.perform();
-                    }
+		irc.on('chancmd:mac', function (from, channel, args, target) {
+			var uinfo = irc.tools.parseUserinfo(from);
+			if(uinfo.nick == irc.connection.nick)
+				return;
+			var say = (msg) => {
+				if (uinfo.nick == target) {
+					irc.send(`PRIVMSG ${channel} :${msg}`);
+					else
+					irc.send(`PRIVMSG ${channel} :${target}: ${msg}`);
+				}
+			};	
+			var vendor = '';
+			var curl = new Curl();
+			url = "http://api.macvendors.com/" + htmlDecoder.encode(args.trim());
+			curl.setOpt('FOLLOWLOCATION', true );
+			curl.setOpt('URL', url);
+			curl.on( 'end', function( statusCode, body, headers ) {
+				vendor = htmlDecoder.decode(body);
+				if ( vendor == "")
+					return;
+				say(from + ': ' + vendor);
+			});
+			curl.on('error', function(){curl.close();});
+			curl.perform();
 		});
 	}
 });

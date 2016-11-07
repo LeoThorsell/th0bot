@@ -9,9 +9,10 @@ mm.add({
 		irc.on('chancmd:seen', function (from, channel, message, target, respond) {
 			var uinfo = irc.tools.parseUserinfo(from);
 			if(message == irc.connection.nick) {
-				me.irc.say(channel, '*bonk*');
+				respond('*bonk*');
 				return;
 			}
+			console.log(`seen, query for ${message}`);
 			var client = new elasticsearch.Client({host:'localhost:9200'});
 			client.search({
 				index: 'irc',

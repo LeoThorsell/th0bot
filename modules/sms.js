@@ -8,7 +8,10 @@ var request = require('request');
 mm.add({
 	contacts: [],
 	name: 'sms',
-	init: function(){
+	init: function(irc){
+		var say = (target, message) => {
+			irc.send(`PRIVMSG ${target} :${message}`);
+		};
 		// LeoTho => #leotho: hej
 		var me = this;
 		this.sms = smsService;
@@ -27,33 +30,32 @@ mm.add({
 				fromName = msg.from;
 			if(!fromName || !msg.message)
 				return;
-			me.irc.say('#daladevelop', fromName + ' says: '+ msg.message);
+			say('#daladevelop', fromName + ' says: '+ msg.message);
 		});
-		
 
-		this.on('message', function (from, to, message) {
-			if(from == me.irc.opt.nick)
+		irc.on('chanmsg:smsadd', (from, channel, message) => {
+			var uinfo = irc.tools.parseUserinfo(from);
+			if (uinfo.nick == irc.connection.nick)
 				return;
 			message = message.trim();
-			if(message.startsWith('!smsadd ')){
-				message = message.substring(8).trim();
-				me.addPerson(from, message);
-				me.irc.say(to, 'råger.')
+			me.addPerson(from, message.substring(8).trim());
+			say(channel, 'råååger');
+		});
+		irc.on('chanmsg:sms', (from, channel, message) => {
+			var uinfo = irc.tools.parseUserinfo(from);
+			if (uinfo.nick == irc.connection.nick)
+				return;
+			message = message.substring(5).trim();
+			var splitted = message.split(' ');
+			var nick = splitted.shift();
+			for(var i=0;i<me.contacts.length;i++){
+				if(nick != me.contacts[i].nick)
+					continue;
+				console.log('sending sms to: ' + me.contacts[i].number);
+				me.sendSms(me.contacts[i].number, uinfo.nick + ': ' + splitted.join(' '));
 				return;
 			}
-			else if(message.startsWith('!sms ')){
-				message = message.substring(5).trim();
-				var splitted = message.split(' ');
-				var nick = splitted.shift();
-				for(var i=0;i<me.contacts.length;i++){
-					if(nick != me.contacts[i].nick)
-						continue;
-					console.log('sending sms to: ' + me.contacts[i].number);
-					me.sendSms(me.contacts[i].number, from + ': ' + splitted.join(' '));
-					return;
-				}
-				me.irc.say(to, 'number not found');
-			}
+			say(channel, 'number not found');
 		});
 	},
 	addPerson: function(nick, number){
@@ -104,18 +106,18 @@ mm.add({
 		console.log('sending message...');
 		console.log(arguments);
 		request.post('https://' + username + ':' + password + '@api.46elks.com/a1/SMS',
-			{ form: 
-				{ 
-					from: '+46766861159',
-					to: number,
-					message: message	
-				} 
-			},
-			function (error, response, body) {
-				if(error)
-					console.log('error sending sms: ' + error);
-			}
-	    	);
+								 { form: 
+									 { 
+									 from: '+46766861159',
+									 to: number,
+									 message: message	
+								 } 
+								 },
+								 function (error, response, body) {
+									 if(error)
+										 console.log('error sending sms: ' + error);
+								 }
+								);
 	}
 });
 var smsService = {

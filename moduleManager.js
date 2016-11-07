@@ -1,8 +1,8 @@
 var domain = require('domain');
 if (typeof String.prototype.endsWith !== 'function') {
-    String.prototype.endsWith = function(suffix) {
-        return this.indexOf(suffix, this.length - suffix.length) !== -1;
-    };
+	String.prototype.endsWith = function(suffix) {
+		return this.indexOf(suffix, this.length - suffix.length) !== -1;
+	};
 }
 
 var moduleManager = {
@@ -13,28 +13,21 @@ var moduleManager = {
 		if(!module.name)
 			return;
 		module.moduleManager = this;
-		module.on = function(eventName, cb){
-			if(eventName == 'pm')
-				module.pmCallback = cb;
-			else if(eventName == 'message')
-				module.messageCallback = cb;
-		};
 		this.modules[module.name] = module;
 	},
 	init: function(irc, path){
 		path = path || './modules/';
-		this.irc = irc;
 		var mm = this;
 		require('fs').readdirSync(path).forEach(function(file){
 			if(!file.endsWith('.js'))
 				return;
 			console.log(path + file);
 			var d = domain.create();
-			var name = file.substring(3);
+			var name = file;
 			d.on('error', function(err){
 				console.log(file + ' ' + err);
 				if (err.stack)
-				console.log(err.stack);
+					console.log(err.stack);
 				var module = mm.modules[name];
 				if(module == null)
 					return;
@@ -42,7 +35,13 @@ var moduleManager = {
 				console.log(name + ' removed from manager');
 			});
 			d.run(function(){
-				require(path + file);
+				try {
+					require(path + file);
+				} catch (e) {
+					console.error(`Error loading module ${name}: ${e}`);
+					if (e.stack)
+						console.error(e.stack);
+				}
 			});
 		});
 		for(var name in this.modules){
@@ -51,40 +50,13 @@ var moduleManager = {
 			console.log('Loading module ' + name );
 			if(typeof(module.init) == 'function'){
 				console.log('Calling init()');
-				module.init();	
-			}
-		}
-		var me = this;
-		irc.addListener('pm', function(from, msg){
-			me.privateMessage(from, msg);
-		});	
-		irc.addListener('message', function(from, to, msg){
-			me.message(from, to, msg);
-		});
-	},
-	privateMessage: function(from, msg){
-		for(var name in this.modules){
-			var module = this.modules[name];
-			if( typeof(module.pmCallback) != 'function')
-				continue;
-			try
-			{
-				module.pmCallback(from, msg);
-			}catch(e){
-				console.log( 'Module ' + name + ' on pm: ' + e);
-			}
-		}	
-	},
-	message: function(from, to, message){
-		for(var name in this.modules){
-			var module = this.modules[name];
-			if(typeof(module.messageCallback)!='function')
-				continue;
-			try
-			{
-				module.messageCallback(from, to, message);
-			}catch(e){
-				console.log('Module ' + name + ' on message: ' + e);
+				try {
+					module.init(irc);	
+				} catch (e) {
+					console.error(`Error initializing module ${name}: ${e}`);
+					if (e.stack)
+						console.error(e.stack);
+				}
 			}
 		}
 	}
@@ -92,10 +64,11 @@ var moduleManager = {
 module.exports =  moduleManager;
 moduleManager.add({
 	name: 'ModuleManager',
-	init: function(){
+	init: function(irc){
 		var me = this;
-		this.on('pm', function(from, msg){
-			if(from != 'LeoTho')
+		me.irc = irc;
+		irc.on('botmsg', function(from, msg){
+			if(irc.tools.parseUserinfo(from).nick != 'LeoTho')
 				return;
 			if(msg[0]!= '!')
 				return;
@@ -128,8 +101,7 @@ moduleManager.add({
 			var module = this.moduleManager.modules[name];
 			if(module == null)
 				return;
-			module.irc = this.irc;
-			module.init();
+			module.init(this.irc);
 			console.log('init done');
 		}
 	}

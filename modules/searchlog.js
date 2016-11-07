@@ -3,14 +3,12 @@ require('../leoLibrary.js')
 var http = require('http');
 mm.add({
 	name: 'searchlog',
-	init: function(){
+	init: function(irc){
 		// LeoTho => #leotho: hej
-		var me = this;
-		this.on('message', function (from, to, message) {
-			if(to[0]!='#')
-				return;
+		irc.on('chanmsg', function (from, to, message) {
+			var uinfo = irc.tools.parseUserinfo(from);
 			var toSave = {
-				nick: from,
+				nick: uinfo.nick,
 				message: message,
 			};
 			if(message.startsWith('!search'))

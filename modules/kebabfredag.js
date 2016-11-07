@@ -5,12 +5,12 @@ var commandTriggerExpr = /^!kebab(fredag)?/;
 var questionTriggerExpr = /^[äe]re?\s+(det?\s+)?kebabfredag\?[?!\s]*$/i;
 var kebabApiUrl = "http://ere.kebabfredag.nu/api/";
 
- mm.add({
+mm.add({
 	name: 'kebabfredag',
-	init: function() {
-		var irc = this.irc;
-		irc.on('message', (from, to, message) => {
-			if(from == irc.opt.nick)
+	init: function(irc) {
+		irc.on('chanmsg', (from, channel, message) => {
+			var uinfo = irc.tools.parseUserinfo(from);
+			if(uinfo.nick == irc.connection.nick)
 				return;
 			message = message.trim();
 			if(!commandTriggerExpr.test(message) && !questionTriggerExpr.test(message))
@@ -28,7 +28,7 @@ var kebabApiUrl = "http://ere.kebabfredag.nu/api/";
 					}
 					if (data && data.hasOwnProperty('answer')) {
 						var response = data.answer ? 'Jepp, det är kebabfredag.' : 'Nepp, inte kebabfredag idag :(';
-						irc.say(to, from + ': ' + response);
+						irc.send(`PRIVMSG ${channel} :${uinfo.nick}: ${response}`);
 					}
 				});
 		});

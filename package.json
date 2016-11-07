@@ -2,14 +2,14 @@
 	"name":"th0bot",
 	"version":"0.0.1",
 	"engines": {
-    "node": "^5.0.0"
+    "node": ">=5.0.0"
   }, 
   "dependencies": {
     "elasticsearch": "^9.0.0",
     "html-entities": "^1.2.0",
-    "irc": "^0.4.0",
+    "jonirc": "spuun/node-jonirc",
     "moment": "^2.10.6",
-    "node-libcurl": "^0.7.0",
+    "node-libcurl": "^1.0.0",
     "request": "^2.65.0"
   }
 }

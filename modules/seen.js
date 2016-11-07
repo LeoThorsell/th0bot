@@ -5,15 +5,10 @@ var elasticsearch = require('elasticsearch');
 var moment = require('moment');
 mm.add({
 	name: 'seen',
-	init: function(){
-		var me = this;
-		this.on('message', function (from, to, message) {
-			if(!message.startsWith('!seen '))
-				return;
-			message = message.substring(6);
-			
-			var channel = to;
-			if(message == me.irc.opt.nick){
+	init: function(irc){
+		irc.on('chancmd:seen', function (from, channel, message, target, respond) {
+			var uinfo = irc.tools.parseUserinfo(from);
+			if(message == irc.connection.nick) {
 				me.irc.say(channel, '*bonk*');
 				return;
 			}
@@ -43,15 +38,14 @@ mm.add({
 				}
 			}).then(function(resp){
 				if(resp.hits.total==0){
-					me.irc.say(channel, 'Not seen EvAH!');
+					respond('Not seen EvAH!');
 					return;
 				}
 				console.log(resp.hits.total);
 				var hit = resp.hits.hits[0];
 				var time = new Date(hit.fields._timestamp);
-				//me.irc.say(channel, hit._source.nick + ' was last seen @ ' + time.toISOString() + ' (msgcount=' + resp.hits.total + ' (ingen tävling...))');
 				
-				me.irc.say(channel, hit._source.nick + ' was last seen ' + moment(time).fromNow() + ' (' + resp.hits.total + ')');
+				respond(hit._source.nick + ' was last seen ' + moment(time).fromNow() + ' (' + resp.hits.total + ')');
 				
 			},function(err){
 				console.log('error in search: ' + err);

@@ -17,7 +17,6 @@ var moduleManager = {
 	},
 	init: function(irc, path){
 		path = path || './modules/';
-		this.irc = irc;
 		var mm = this;
 		require('fs').readdirSync(path).forEach(function(file){
 			if(!file.endsWith('.js'))
@@ -63,46 +62,47 @@ var moduleManager = {
 	}
 };
 module.exports =  moduleManager;
-/*moduleManager.add({
-name: 'ModuleManager',
-init: function(){
-this.irc.on('botmsg', function(from, msg){
-if(this.irc.tools.parseUserinfo(from).nick != 'LeoTho')
-return;
-if(msg[0]!= '!')
-return;
-console.log('mm on pm');
-var splitted = msg.split(' ');
-var action = splitted[0];
-action = action.substring(1);
-var argument = splitted.splice(1, Number.MAX_VALUE).join(' ');
-me.performAction(action, argument);
-});	
-},
-performAction: function(action, argument){
-console.log('performAction');
-if(action == "reload"){
-for( var name in this.moduleManager.modules){
-if( name != argument)
-continue;
-delete this.moduleManager.modules[name];
-console.log('delete done');
-}
-var name = argument;
-delete require.cache[require.resolve('./modules/' + name + '.js')];
-try{
-console.log('./modules/' + name + '.js');
-require('./modules/' + name + '.js');
-}
-catch(e){
-console.log(e);
-}
-var module = this.moduleManager.modules[name];
-if(module == null)
-return;
-module.irc = this.irc;
-module.init();
-console.log('init done');
-}
-}
-});*/
+moduleManager.add({
+	name: 'ModuleManager',
+	init: function(irc){
+		var me = this;
+		me.irc = irc;
+		irc.on('botmsg', function(from, msg){
+			if(irc.tools.parseUserinfo(from).nick != 'LeoTho')
+				return;
+			if(msg[0]!= '!')
+				return;
+			console.log('mm on pm');
+			var splitted = msg.split(' ');
+			var action = splitted[0];
+			action = action.substring(1);
+			var argument = splitted.splice(1, Number.MAX_VALUE).join(' ');
+			me.performAction(action, argument);
+		});	
+	},
+	performAction: function(action, argument){
+		console.log('performAction');
+		if(action == "reload"){
+			for( var name in this.moduleManager.modules){
+				if( name != argument)
+					continue;
+				delete this.moduleManager.modules[name];
+				console.log('delete done');
+			}
+			var name = argument;
+			delete require.cache[require.resolve('./modules/' + name + '.js')];
+			try{
+				console.log('./modules/' + name + '.js');
+				require('./modules/' + name + '.js');
+			}
+			catch(e){
+				console.log(e);
+			}
+			var module = this.moduleManager.modules[name];
+			if(module == null)
+				return;
+			module.init(this.irc);
+			console.log('init done');
+		}
+	}
+});

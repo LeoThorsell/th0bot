@@ -5,14 +5,8 @@ mm.add({
 	name: 'pull',
 	init: function(irc){
 		var me = this;
-		irc.on('chancmd:pull' , function (from, channel, args, target) {
+		irc.on('chancmd:pull' , function (from, channel, args, target, respond) {
 			var uinfo = irc.tools.parseUserinfo(from);
-			var respond = (msg) => {
-				if (target == uinfo.nick)  
-					irc.send(`PRIVMSG ${channel} :${msg}`);
-				else
-					irc.send(`PRIVMSG ${channel} :${target}: ${msg}`);
-			};
 			if(uinfo.nick == irc.connection.nick)
 				return;
 			if(args.startsWith('pork')){

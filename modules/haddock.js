@@ -7,16 +7,16 @@ mm.add({
 	name: 'haddock',
 	init: function(irc){
 		var htmlDecoder = new HtmlEntities();
-		irc.on('chancmd:haddock', function (from, channel, message, target) {
+		irc.on('chancmd:haddock', function (from, channel, message, target, respond) {
 			console.log('HADDOCK!');
 			var uinfo = irc.tools.parseUserinfo(from);
-			var say = (msg) => {
+			/*var say = (msg) => {
 				if (uinfo.nick == target) {
 					irc.send(`PRIVMSG ${channel} :${msg}`);
 				} else {
 					irc.send(`PRIVMSG ${channel} :${target}: ${msg}`);
 				}
-			};
+			};*/
 			if(uinfo.nick == irc.connection.nick)
 				return;
 			console.log('Getting haddock...');
@@ -29,7 +29,7 @@ mm.add({
 					return
 				}
 				var haddock = htmlDecoder.decode(haddockMatch[1]);
-				say(haddock);
+				respond(haddock);
 
 			});
 			curl.on('error', function(){curl.close();});

@@ -14,10 +14,11 @@ mm.add({
 			var say = (msg) => {
 				if (uinfo.nick == target) {
 					irc.send(`PRIVMSG ${channel} :${msg}`);
-					else
+				}	else {
 					irc.send(`PRIVMSG ${channel} :${target}: ${msg}`);
 				}
 			};	
+			console.log('Looking up mac...');
 			var vendor = '';
 			var curl = new Curl();
 			url = "http://api.macvendors.com/" + htmlDecoder.encode(args.trim());
@@ -27,7 +28,7 @@ mm.add({
 				vendor = htmlDecoder.decode(body);
 				if ( vendor == "")
 					return;
-				say(from + ': ' + vendor);
+				say(`from: ${vendor}`);
 			});
 			curl.on('error', function(){curl.close();});
 			curl.perform();

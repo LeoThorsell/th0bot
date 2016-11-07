@@ -8,16 +8,18 @@ mm.add({
 	init: function(irc){
 		var htmlDecoder = new HtmlEntities();
 		irc.on('chancmd:haddock', function (from, channel, message, target) {
+			console.log('HADDOCK!');
 			var uinfo = irc.tools.parseUserinfo(from);
 			var say = (msg) => {
 				if (uinfo.nick == target) {
 					irc.send(`PRIVMSG ${channel} :${msg}`);
-				else
+				} else {
 					irc.send(`PRIVMSG ${channel} :${target}: ${msg}`);
 				}
 			};
 			if(uinfo.nick == irc.connection.nick)
 				return;
+			console.log('Getting haddock...');
 			var curl = new Curl();
 			curl.setOpt('FOLLOWLOCATION', true );
 			curl.setOpt('URL', "https://haddock.updog.se/");

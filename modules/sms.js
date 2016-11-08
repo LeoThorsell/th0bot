@@ -33,7 +33,7 @@ mm.add({
 			say('#daladevelop', fromName + ' says: '+ msg.message);
 		});
 
-		irc.on('chanmsg:smsadd', (from, channel, message) => {
+		irc.on('chancmd:smsadd', (from, channel, message) => {
 			var uinfo = irc.tools.parseUserinfo(from);
 			if (uinfo.nick == irc.connection.nick)
 				return;
@@ -41,7 +41,7 @@ mm.add({
 			me.addPerson(from, message.substring(8).trim());
 			say(channel, 'råååger');
 		});
-		irc.on('chanmsg:sms', (from, channel, message) => {
+		irc.on('chancmd:sms', (from, channel, message) => {
 			var uinfo = irc.tools.parseUserinfo(from);
 			if (uinfo.nick == irc.connection.nick)
 				return;

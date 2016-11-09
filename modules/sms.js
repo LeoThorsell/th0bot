@@ -38,14 +38,14 @@ mm.add({
 			if (uinfo.nick == irc.connection.nick)
 				return;
 			message = message.trim();
-			me.addPerson(from, message.substring(8).trim());
+			me.addPerson(from, message.trim());
 			say(channel, 'råååger');
 		});
 		irc.on('chancmd:sms', (from, channel, message) => {
 			var uinfo = irc.tools.parseUserinfo(from);
 			if (uinfo.nick == irc.connection.nick)
 				return;
-			message = message.substring(5).trim();
+			message = message.trim();
 			var splitted = message.split(' ');
 			var nick = splitted.shift();
 			for(var i=0;i<me.contacts.length;i++){

@@ -32,16 +32,17 @@ mm.add({
 				return;
 			say('#daladevelop', fromName + ' says: '+ msg.message);
 		});
-
-		irc.on('chancmd:smsadd', (from, channel, message) => {
+		var smsadd = (from, message, respond) => {
 			var uinfo = irc.tools.parseUserinfo(from);
 			if (uinfo.nick == irc.connection.nick)
 				return;
 			message = message.trim();
 			me.addPerson(from, message.trim());
-			say(channel, 'råååger');
-		});
-		irc.on('chancmd:sms', (from, channel, message) => {
+			respond('råååger');
+		};
+		irc.on('botcmd:smsadd', smsadd);		
+		irc.on('chancmd:smsadd', (from, c, message, t, respond) => smsadd(from,message,respond));
+		irc.on('chancmd:sms', (from, channel, message, t, respond) => {
 			var uinfo = irc.tools.parseUserinfo(from);
 			if (uinfo.nick == irc.connection.nick)
 				return;
@@ -55,7 +56,7 @@ mm.add({
 				me.sendSms(me.contacts[i].number, uinfo.nick + ': ' + splitted.join(' '));
 				return;
 			}
-			say(channel, 'number not found');
+			respond('number not found');
 		});
 	},
 	addPerson: function(nick, number){

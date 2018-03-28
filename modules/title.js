@@ -23,7 +23,7 @@ mm.add({
 				if(new RegExp(ignoreUrls[i], 'i').exec(message))
 					return;
 			//ignore trailing period, comma and close parenthesis
-			var url = urlMatch[0].replace(/[^,.\)]+$/,'');
+			var url = urlMatch[0].replace(/[,.\)]+$/,'');
 			http
 				.get(url, {maxread: 1024*50})
 				.then(res => {

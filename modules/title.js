@@ -14,8 +14,9 @@ mm.add({
 			if(uinfo.nick == irc.connection.nick)
 				return;
 			if(uinfo.nick == 'debuglnorinkdo')
-				return;
-			var urlMatch = /(https?:\/\/[^\s]+)/.exec(message);
+			    return;
+                        // ignore trailing period, comma and close parenthesis
+			var urlMatch = /(https?:\/\/[^\s]+[^,.\)])/.exec(message);
 		
 			if(urlMatch == null)
 				return;

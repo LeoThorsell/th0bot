@@ -15,15 +15,15 @@ mm.add({
 				return;
 			if(uinfo.nick == 'debuglnorinkdo')
 			    return;
-                        // ignore trailing period, comma and close parenthesis
-			var urlMatch = /(https?:\/\/[^\s]+[^,.\)])/.exec(message);
-		
+			var urlMatch = /(https?:\/\/[^\s]+)/.exec(message);
+
 			if(urlMatch == null)
 				return;
 			for(var i=0;i<ignoreUrls.length;i++)
 				if(new RegExp(ignoreUrls[i], 'i').exec(message))
 					return;
-			var url = urlMatch[0];
+			//ignore trailing period, comma and close parenthesis
+			var url = urlMatch[0].replace(/[^,.\)]+$/,'');
 			http
 				.get(url, {maxread: 1024*50})
 				.then(res => {

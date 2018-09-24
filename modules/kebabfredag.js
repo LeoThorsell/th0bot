@@ -2,7 +2,7 @@ require('../leoLibrary.js');
 var http = require('../http.js');
 var mm =  require('../moduleManager.js');
 var questionTriggerExpr = /^[äe]re?\s+(det?\s+)?kebabfredag\?[?!\s]*$/i;
-var kebabApiUrl = "http://ere.kebabfredag.nu/api/";
+var kebabApiUrl = "https://ere.kebabfredag.nu/api/";
 
 mm.add({
   name: 'kebabfredag',
